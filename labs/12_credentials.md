@@ -68,13 +68,16 @@ pipeline {
 
 ``credentials`` automatically deals with different credentials types. For username/password credentials
 it makes three environment variables available:
-* MYVARNAME = <username>:<password>
-* MYVARNAME_USR = <username>
-* MYVARNAME_PSW = <password>
+* MYVARNAME = &lt;username&gt;:&lt;password&gt;
+* MYVARNAME_USR = &lt;username&gt;
+* MYVARNAME_PSW = &lt;password&gt;
+
 In case of a secret file ``MYVARNAME`` contains the filename of a temporary file containing the requested secret.
 Additionally we make use of the ``sshagent`` step which managed a dedicated SSH agent with the requested
 credential loaded. This is more secure than writing the key into a file and also works in scenarios
 where support for alternate ssh key files is missing, e.g. when installing packages in private Git repos through npm.
+
+**Note:** Check the build log output on the Jenkins master. All credentials will be shown as ```****```.
 
 Lab 12.2: Credentials (Scripted Syntax)
 ---------------------------------------
@@ -102,16 +105,20 @@ try {
             node(env.JOB_NAME.split('/')[0]) {
                 stage('Build') {
                     try {
-                        withCredentials([file(credentialsId: 'm2_settings', variable: 'M2_SETTINGS'), usernameColonPassword(credentialsId: 'jenkins-artifactory', variable: 'ARTIFACTORY'), file(credentialsId: 'known_hosts', variable: 'KNOWN_HOSTS')]) {  // Credentials Binding Plugin
+                        withCredentials([
+                            file(credentialsId: 'm2_settings', variable: 'M2_SETTINGS'),
+                            usernameColonPassword(credentialsId: 'jenkins-artifactory', variable: 'ARTIFACTORY'),
+                            file(credentialsId: 'known_hosts', variable: 'KNOWN_HOSTS')
+                        ]) {  // Credentials Binding Plugin
                             withEnv(["JAVA_HOME=${tool 'jdk8'}", "PATH+MAVEN=${tool 'maven35'}/bin:${env.JAVA_HOME}/bin"]) {
                                 checkout scm
                                 sh 'mvn -B -V -U -e clean verify -Dsurefire.useFile=false'
                                 sh "mvn -s '${M2_SETTINGS}' -B deploy:deploy-file -DrepositoryId='puzzle-releases' -Durl='${REPO_URL}' -DgroupId='com.puzzleitc.jenkins-techlab' -DartifactId='${ARTIFACT}' -Dversion='1.0' -Dpackaging='jar' -Dfile=`echo target/*.jar`"                              
                             }
 
-                        sshagent(['testserver']) {  // SSH Agent Plugin
-                            sh "ls -l target"
-                            sh "ssh -o UserKnownHostsFile='${KNOWN_HOSTS}' -p 2222 richard@testserver.vcap.me 'curl -O -u \'${ARTIFACTORY}\' ${REPO_URL}/com/puzzleitc/jenkins-techlab/${ARTIFACT}/1.0/${ARTIFACT}-1.0.jar && ls -l'"
+                            sshagent(['testserver']) {  // SSH Agent Plugin
+                                sh "ls -l target"
+                                sh "ssh -o UserKnownHostsFile='${KNOWN_HOSTS}' -p 2222 richard@testserver.vcap.me 'curl -O -u \'${ARTIFACTORY}\' ${REPO_URL}/com/puzzleitc/jenkins-techlab/${ARTIFACT}/1.0/${ARTIFACT}-1.0.jar && ls -l'"
                             }
                         }
 
@@ -133,6 +140,8 @@ you are accessing. See <https://jenkins.io/doc/pipeline/steps/credentials-bindin
 for more information. The available credential types depend on the plugins installed. Visit the ``/pipeline-syntax/`` path
 on your server to see only what's actually available, e.g. <https://jenkins-techlab.ose3-lab.puzzle.ch/pipeline-syntax/>
 for this techlab.
+
+**Note:** Check the build log output on the Jenkins master. All credentials will be shown as ```****```.
 
 ---
 
