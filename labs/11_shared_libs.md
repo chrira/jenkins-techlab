@@ -92,10 +92,15 @@ Since the step deals with different build results we can also replace the
 directive. Note that ``channel`` is still optional and defaults to the
 channel in the Rocket.Chat plugin configuration.
 
+**Note:** Check the build log output on the Jenkins master. Search for ``Loading library jenkins-techlab-libraries@master``.
+Find also the success message in the jenkins-techlab Rocket.Chat.
+
 Lab 11.3: Use Shared Library (Scripted Syntax)
 ----------------------------------------------
 
 Simplify our scripted pipeline from the last lab analogously.
+
+Verify your scripts with the [solution](solutions/11_3_shared_libs_solution.md).
 
 Lab 11.4: Additional Shared Library Capabilities
 ------------------------------------------------
