@@ -1,7 +1,7 @@
 Lab 13: Stages, Locks and Milestones
 ====================================
 
-Stages are used to group steps together and to provide boundaries in for pipeline segments which
+Stages are used to group steps together and to provide boundaries for pipeline segments which
 are also used when visualizing pipelines, e.g. in the Jenkins or OpenShift web interface.
 In declarative pipelines some directives like ``post`` or ``agent`` can appear on ``stage`` as well as on the
 global level.  
@@ -95,6 +95,8 @@ Lab 13.2: Stages, Locks and Milestones (Scripted Syntax)
 --------------------------------------------------------
 
 Adapt scripted pipeline from previous lab analogously.
+
+Verify your scripts with the [solution](solutions/13_2_stages_locks_milestones_solution.md).
 
 ---
 
